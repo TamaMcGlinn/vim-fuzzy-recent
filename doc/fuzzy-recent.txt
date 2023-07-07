@@ -1,0 +1,67 @@
+*fuzzy-recent*  A plugin for Vim / NeoVim
+fuzzy-recent                                                 *fuzzy-recent*
+
+Author:  TamaMcGlinn <https://github.com/TamaMcGlinn>
+License: Same terms as Vim itself (see |license|)
+
+==============================================================================
+INTRODUCTION                                                  *fuzzy-recent-intro*
+
+Fuzzy-recent is a small vim plugin built on |fzf.vim| to fuzzy find and
+operate on files, which shows open buffers and recently viewed files first,
+and expands that list to all git tracked files when you press space.
+
+Type any characters to narrow down the search with fuzzy search,
+control-N / control-P to move up and down the list, and press enter 
+to select the file. You can use tab to select multiple files. 
+Pressing space expands the list to all git tracked files.
+
+==============================================================================
+PREREQUISITES                                              *fuzzy-recent-prereqs*
+
+Flog supports Vim 8, Vim 9, and Neovim.
+You need |fzf-vim| installed.
+
+==============================================================================
+MAPPINGS                                                 *fuzzy-recent-mappings*
+
+Fuzzy-recent does not define any mappings. The most basic example would be:
+
+  nnoremap <silent> <space>fj :call fuzzy_recent#Find()<CR>
+
+==============================================================================
+FUNCTIONS                                                *fuzzy-recent-functions*
+
+                                                                 *fuzzy-recent#Find()*
+fuzzy-recent#Find([options_dict])
+
+  Fuzzy search for files, recent ones first, press space for all git files.
+  The optional dictionary can specify extensions and/or a custom function
+  that takes the filename and does something else than the default (opening).
+
+For example, you could add a binding to search for shell scripts:
+
+  nnoremap <silent> <leader>fb :call fuzzy_recent#Find({'extensions': ["", "bash", "zsh", "tsh", "bat", "cmd"]})<CR>
+
+Or one to search for files with the same extension as the current one:
+
+  nnoremap <silent> <leader>fc :call fuzzy_recent#Find({'extensions': [expand('%:e')]})<CR>
+
+Here is a more advanced example, which lets you add a path to some other file:
+
+  function! LinkGitSink(filename) abort
+    let l:git_root = systemlist('git rev-parse --show-toplevel')[0]
+    let l:relative_path = systemlist('realpath --relative-base="' .. l:git_root .. '" ' .. a:filename)[0]
+    call setline('.', getline('.') .. l:relative_path)
+  endfunction
+
+  function! LinkFileSink(filename) abort
+    let l:current_file_dir = expand('%:p:h')
+    let l:relative_path = systemlist('realpath --relative-base="' .. l:current_file_dir .. '" ' .. a:filename)[0]
+    call setline('.', getline('.') .. l:relative_path)
+  endfunction
+
+  nnoremap <silent> <leader>fl :call fuzzy_recent#Find({'sink_function': 'LinkGitSink'})<CR>
+  nnoremap <silent> <leader>fL :call fuzzy_recent#Find({'sink_function': 'LinkFileSink'})<CR>
+
+ vim:tw=78:ts=8:ft=help
