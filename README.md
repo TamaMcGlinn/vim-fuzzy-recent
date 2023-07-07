@@ -64,4 +64,4 @@ nnoremap <silent> <leader>fL :call fuzzy_recent#Find({'sink_function': 'LinkFile
 
 ## Getting Help
 
-See [the issue tracker](https://github.com/TamaMcGlinn/fuzzy-recent/issues) and `:help fuzzy-recent`.
+See [the issue tracker](https://github.com/TamaMcGlinn/vim-fuzzy-recent/issues) and `:help fuzzy-recent`.
